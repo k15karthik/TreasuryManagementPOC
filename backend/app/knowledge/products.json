@@ -1,0 +1,233 @@
+[
+  {
+    "id": "positive-pay",
+    "name": "Positive Pay",
+    "category": "Fraud Prevention",
+    "description": "An automated check and ACH fraud detection service that matches checks and electronic debits presented for payment against a client-submitted issue file, flagging any mismatches for review before funds move.",
+    "ideal_client": "Businesses that issue a moderate-to-high volume of checks, have experienced or fear check/ACH fraud, or operate with multiple signers and locations.",
+    "benefits": [
+      "Drastically reduces check and ACH fraud losses",
+      "Gives finance teams a daily exception review workflow instead of after-the-fact loss discovery",
+      "Strengthens internal controls for audit and compliance",
+      "Protects company reputation and banking relationships"
+    ],
+    "requirements": [
+      "Ability to submit a daily issue file (check register) to the bank",
+      "Designated staff to review and decision daily exception items",
+      "Online banking access for exception management"
+    ],
+    "pain_points_solved": ["High Fraud Risk", "Fraud History", "Manual Payments", "Too Many Checks"],
+    "keywords": ["fraud", "check fraud", "ach fraud", "positive pay", "exception review", "security", "controls"]
+  },
+  {
+    "id": "ach-origination",
+    "name": "ACH Origination",
+    "category": "Payments",
+    "description": "Enables a business to originate electronic ACH credits and debits directly from its own systems, including payroll, vendor payments, and customer collections, eliminating paper checks.",
+    "ideal_client": "Companies with recurring payroll, vendor payments, or customer billing that currently rely heavily on paper checks or manual payment processes.",
+    "benefits": [
+      "Reduces check printing, postage, and reconciliation costs",
+      "Speeds up payroll and vendor payment cycles",
+      "Improves cash flow predictability",
+      "Integrates with most ERP and payroll systems"
+    ],
+    "requirements": [
+      "ACH origination agreement and underwriting approval",
+      "ERP or payroll system capable of generating NACHA files, or use of the bank's origination portal",
+      "Established payment approval / dual-control workflow"
+    ],
+    "pain_points_solved": ["Manual Payments", "Too Many Checks", "Payroll Complexity", "Slow Collections"],
+    "keywords": ["ach", "payroll", "vendor payments", "electronic payments", "nacha", "direct deposit"]
+  },
+  {
+    "id": "lockbox",
+    "name": "Lockbox",
+    "category": "Receivables",
+    "description": "A dedicated bank-operated P.O. box and processing service that receives, opens, scans, and deposits customer checks and remittances on the client's behalf, same-day.",
+    "ideal_client": "Businesses that receive a high volume of mailed customer payments and need to accelerate collections and reduce internal processing labor.",
+    "benefits": [
+      "Accelerates funds availability by processing remittances same-day",
+      "Reduces internal mailroom and deposit-prep labor",
+      "Provides detailed remittance data for faster AR posting",
+      "Improves segregation of duties for audit purposes"
+    ],
+    "requirements": [
+      "Customer-facing remittance address change to the lockbox P.O. box",
+      "AR system capable of importing lockbox remittance files (BAI2/CSV)"
+    ],
+    "pain_points_solved": ["Slow Collections", "Manual Payments", "Cash Heavy Business", "Too Many Checks"],
+    "keywords": ["lockbox", "remittance", "receivables", "collections", "ar", "mailed checks"]
+  },
+  {
+    "id": "remote-deposit-capture",
+    "name": "Remote Deposit Capture",
+    "category": "Receivables",
+    "description": "Allows staff to scan and deposit checks electronically from any office location using a desktop scanner or mobile app, without a trip to the branch.",
+    "ideal_client": "Multi-location businesses or any company that regularly receives in-person or mailed checks away from a branch.",
+    "benefits": [
+      "Eliminates branch trips and deposit delays across locations",
+      "Accelerates funds availability",
+      "Centralizes deposit reporting across all locations",
+      "Reduces courier and armored transport costs"
+    ],
+    "requirements": [
+      "Check scanner (desktop or mobile-capable) at each depositing location",
+      "Secure internet connection and online banking enrollment"
+    ],
+    "pain_points_solved": ["Multi-location Banking", "Slow Collections", "Too Many Checks"],
+    "keywords": ["rdc", "remote deposit", "check scanning", "multi-location", "deposits"]
+  },
+  {
+    "id": "cash-vault",
+    "name": "Cash Vault",
+    "category": "Cash Management",
+    "description": "Secure armored-carrier cash and coin deposit processing for businesses with heavy daily currency volume, with provisional same-day credit and detailed deposit verification reporting.",
+    "ideal_client": "Cash-intensive businesses such as retail, restaurants, and grocery with significant daily currency deposits across one or more locations.",
+    "benefits": [
+      "Reduces in-branch teller time and staff safety risk from cash handling",
+      "Provides provisional same-day ledger credit for deposited cash",
+      "Detailed variance reporting between counted and verified deposits",
+      "Scales cleanly across multiple locations"
+    ],
+    "requirements": [
+      "Sufficient daily/weekly cash volume to justify armored carrier costs",
+      "Coordination with an approved armored transport vendor"
+    ],
+    "pain_points_solved": ["Cash Heavy Business", "Multi-location Banking"],
+    "keywords": ["cash vault", "currency", "armored car", "cash deposits", "retail", "restaurant"]
+  },
+  {
+    "id": "zero-balance-accounts",
+    "name": "Zero Balance Accounts (ZBA)",
+    "category": "Liquidity Management",
+    "description": "A structure of subsidiary or departmental accounts that automatically sweep to zero at the end of each day, concentrating all funds into a single master account for centralized control.",
+    "ideal_client": "Businesses with multiple entities, departments, or locations that want centralized cash visibility and control without manual inter-account transfers.",
+    "benefits": [
+      "Eliminates idle balances scattered across subsidiary accounts",
+      "Simplifies daily cash positioning and reduces manual transfers",
+      "Maintains distinct accounting for each entity/department while centralizing funds",
+      "Improves interest earnings and borrowing efficiency on the master account"
+    ],
+    "requirements": [
+      "Master operating account plus one or more subsidiary accounts at the bank",
+      "Defined account structure aligned to entities, departments, or locations"
+    ],
+    "pain_points_solved": ["Liquidity Issues", "Multi-location Banking", "Payroll Complexity"],
+    "keywords": ["zba", "zero balance", "sweep", "liquidity", "cash concentration", "subsidiaries"]
+  },
+  {
+    "id": "sweep-accounts",
+    "name": "Sweep Accounts",
+    "category": "Liquidity Management",
+    "description": "Automatically transfers excess operating balances above a target threshold into an interest-bearing investment or line-of-credit paydown vehicle overnight, then sweeps back the next business day.",
+    "ideal_client": "Businesses holding excess idle cash in operating accounts, or those wanting to minimize revolving line-of-credit interest expense automatically.",
+    "benefits": [
+      "Maximizes yield on idle operating cash without manual intervention",
+      "Can automatically pay down a line of credit to reduce interest expense",
+      "Maintains full liquidity for next-day operating needs",
+      "Removes manual, error-prone end-of-day cash decisions"
+    ],
+    "requirements": [
+      "Operating account with the bank and a defined target/peg balance",
+      "Investment sweep vehicle or line of credit to sweep against"
+    ],
+    "pain_points_solved": ["Liquidity Issues", "Growth Plans"],
+    "keywords": ["sweep", "excess cash", "investment", "line of credit", "yield", "liquidity"]
+  },
+  {
+    "id": "merchant-services",
+    "name": "Merchant Services",
+    "category": "Payments",
+    "description": "Card payment acceptance solutions spanning in-person terminals, e-commerce gateways, and mobile card readers, with next-day funding and integrated reporting.",
+    "ideal_client": "Businesses that accept or want to accept debit/credit card payments in-store, online, or on the go, especially those growing sales channels.",
+    "benefits": [
+      "Expands accepted payment methods to grow sales",
+      "Next-day funding improves cash flow",
+      "Integrated reporting simplifies reconciliation",
+      "PCI-compliant processing reduces card data risk"
+    ],
+    "requirements": [
+      "Merchant underwriting approval",
+      "POS hardware or e-commerce gateway integration",
+      "PCI-DSS compliance attestation"
+    ],
+    "pain_points_solved": ["Growth Plans", "Slow Collections", "Manual Payments"],
+    "keywords": ["merchant services", "card processing", "pos", "e-commerce", "credit card", "payments"]
+  },
+  {
+    "id": "wire-transfers",
+    "name": "Wire Transfers",
+    "category": "Payments",
+    "description": "Domestic and international same-day wire origination for large-dollar or time-critical payments, with dual-approval controls and same-day settlement.",
+    "ideal_client": "Businesses that make large, time-sensitive, or international payments such as supplier settlements, real estate closings, or payroll to international contractors.",
+    "benefits": [
+      "Same-day, irrevocable settlement for time-critical payments",
+      "Supports both domestic and international currency transfers",
+      "Dual-control approval workflow reduces fraud risk",
+      "Templates and repetitive wires speed up recurring payments"
+    ],
+    "requirements": [
+      "Wire agreement with dual-approval setup",
+      "Online banking or treasury workstation access"
+    ],
+    "pain_points_solved": ["Manual Payments", "High Fraud Risk", "Growth Plans"],
+    "keywords": ["wire transfer", "international payments", "same-day", "large dollar", "domestic wire"]
+  },
+  {
+    "id": "controlled-disbursement",
+    "name": "Controlled Disbursement",
+    "category": "Payments",
+    "description": "Provides early-morning notification of the day's total check clearings against a disbursement account, giving treasury staff precise, same-day funding requirements before the account must be funded.",
+    "ideal_client": "Businesses that issue a high dollar volume of checks and want precise daily cash-funding visibility rather than over-funding disbursement accounts as a buffer.",
+    "benefits": [
+      "Improves forecasting accuracy for daily disbursement funding",
+      "Frees up cash that would otherwise sit idle as a funding buffer",
+      "Pairs naturally with sweep or ZBA structures for full liquidity optimization",
+      "Reduces overdraft risk through early notification"
+    ],
+    "requirements": [
+      "Dedicated disbursement account",
+      "Treasury staff available to review the early-morning funding notification and fund the account same day"
+    ],
+    "pain_points_solved": ["Liquidity Issues", "Too Many Checks"],
+    "keywords": ["controlled disbursement", "check clearing", "funding notification", "liquidity", "cash forecasting"]
+  },
+  {
+    "id": "business-bill-pay",
+    "name": "Business Bill Pay",
+    "category": "Payments",
+    "description": "An online platform for scheduling and paying vendor bills electronically (ACH, check, or virtual card) from a single dashboard, with approval workflows and payment history.",
+    "ideal_client": "Small-to-mid-sized businesses with manual, check-based accounts-payable processes and limited AP staff.",
+    "benefits": [
+      "Consolidates all vendor payments into a single online workflow",
+      "Reduces manual check writing and mailing",
+      "Provides approval routing for internal controls",
+      "Centralized payment history simplifies reconciliation and audit"
+    ],
+    "requirements": [
+      "Online banking enrollment",
+      "Vendor payment details (W-9/banking info) for electronic payment setup"
+    ],
+    "pain_points_solved": ["Manual Payments", "Too Many Checks"],
+    "keywords": ["bill pay", "accounts payable", "vendor payments", "ap automation", "online payments"]
+  },
+  {
+    "id": "information-reporting",
+    "name": "Information Reporting",
+    "category": "Treasury Technology",
+    "description": "A consolidated online treasury workstation providing real-time and prior-day balance and transaction reporting across all accounts, with BAI2/CSV data feeds for ERP integration.",
+    "ideal_client": "Businesses with multiple accounts, entities, or locations that need centralized visibility into cash positions, or that want to automate cash reconciliation into their ERP.",
+    "benefits": [
+      "Single view of balances and transactions across every account and entity",
+      "Automates daily cash positioning and forecasting",
+      "BAI2/CSV feeds integrate directly into most ERP systems",
+      "Improves internal controls through consolidated audit trails"
+    ],
+    "requirements": [
+      "Online banking / treasury workstation enrollment for all applicable accounts",
+      "ERP capable of ingesting BAI2 or CSV feeds for full integration value"
+    ],
+    "pain_points_solved": ["Multi-location Banking", "Liquidity Issues", "Manual Payments"],
+    "keywords": ["information reporting", "treasury workstation", "cash visibility", "bai2", "reporting", "erp integration"]
+  }
+]
