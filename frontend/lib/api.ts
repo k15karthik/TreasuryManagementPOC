@@ -1,6 +1,8 @@
 import type { AnalysisListItem, AnalysisRecord, ClientProfile, Product, WorkflowEvent } from "./types";
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+// Vercel env vars are sometimes entered with a trailing slash; stripping it here
+// keeps every `${API_BASE}${path}` call below from producing "//api/...".
+export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
