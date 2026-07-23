@@ -1,11 +1,24 @@
 """Application-wide settings, loaded from environment variables / .env."""
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = BACKEND_ROOT / "data"
-DATA_DIR.mkdir(exist_ok=True)
+
+# Vercel sets VERCEL=1 in every serverless function's environment. On that
+# runtime the deployed bundle (including BACKEND_ROOT) is mounted read-only
+# under /var/task, so "backend/data" can't be created or written to there —
+# /tmp is the only writable path. Note this storage is ephemeral: it is not
+# guaranteed to survive between invocations or across concurrent instances.
+IS_VERCEL = bool(os.environ.get("VERCEL"))
+
+if IS_VERCEL:
+    DATA_DIR = Path("/tmp") / "tmcs_copilot_data"
+else:
+    DATA_DIR = BACKEND_ROOT / "data"
+
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Settings(BaseSettings):
