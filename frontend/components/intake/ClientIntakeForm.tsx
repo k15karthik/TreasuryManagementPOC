@@ -1,13 +1,16 @@
 "use client";
 
+import { useRef, useState, type ChangeEvent } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Sparkles, Wand2 } from "lucide-react";
+import { Download, FileSpreadsheet, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 
 import type { ClientProfile } from "@/lib/types";
 import { BANKING_PRODUCT_OPTIONS, FRAUD_HISTORY_OPTIONS, INDUSTRY_OPTIONS, PAIN_POINT_OPTIONS, PAYMENT_METHOD_OPTIONS } from "@/lib/form-options";
 import { SAMPLE_CLIENTS } from "@/lib/sample-clients";
+import { parseClientExcel } from "@/lib/excel-import";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,10 +67,39 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
     resolver: zodResolver(schema),
     defaultValues: DEFAULT_VALUES,
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
   function loadExample(label: string) {
     const example = SAMPLE_CLIENTS.find((s) => s.label === label);
     if (example) form.reset(example.profile as IntakeFormValues);
+  }
+
+  async function handleExcelSelected(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file next time
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const { profile, matchedCount, unrecognizedLabels, unmatchedValues } = await parseClientExcel(file);
+      if (matchedCount === 0) {
+        toast.error("No recognizable fields found in that file. Check the row labels and try again.");
+        return;
+      }
+
+      form.reset({ ...form.getValues(), ...profile } as IntakeFormValues);
+      toast.success(`Auto-populated ${matchedCount} field${matchedCount === 1 ? "" : "s"} from ${file.name}`);
+
+      for (const msg of unmatchedValues) toast.warning(msg);
+      if (unrecognizedLabels.length > 0) {
+        toast.warning(`Didn't recognize ${unrecognizedLabels.length} row label(s): ${unrecognizedLabels.join(", ")}`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not read that Excel file.");
+    } finally {
+      setIsImporting(false);
+    }
   }
 
   function handleSubmit(values: IntakeFormValues) {
@@ -86,6 +118,40 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
                 {s.label}
               </Button>
             ))}
+          </CardContent>
+        </Card>
+
+        <Card className="border-dashed border-primary/40 bg-accent/30">
+          <CardContent className="flex flex-wrap items-center gap-2 p-4">
+            <FileSpreadsheet className="h-4 w-4 text-primary" />
+            <span className="text-xs font-medium text-foreground">Or auto-populate from an Excel file:</span>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              className="hidden"
+              onChange={handleExcelSelected}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isImporting}
+              onClick={() => fileInputRef.current?.click()}
+              className="gap-1.5"
+            >
+              {isImporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5" />}
+              {isImporting ? "Reading file..." : "Upload Excel"}
+            </Button>
+            <Button type="button" variant="ghost" size="sm" asChild className="gap-1.5">
+              <a href="/templates/client-intake-template.xlsx" download>
+                <Download className="h-3.5 w-3.5" />
+                Download Template
+              </a>
+            </Button>
+            <span className="text-[11px] text-muted-foreground">
+              One row per field, e.g. &quot;Company Name&quot; in column A, the value in column B.
+            </span>
           </CardContent>
         </Card>
 
