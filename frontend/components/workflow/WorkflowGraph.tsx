@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Building2, ClipboardList, FileText, PackageSearch, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDown, Building2, Calculator, ClipboardList, FileText, PackageSearch, ShieldCheck, Sparkles, Users } from "lucide-react";
 
 import type { AgentKey, AgentStatus } from "@/lib/types";
 import { AgentCard } from "./AgentCard";
@@ -17,10 +17,20 @@ const AGENT_META: Record<AgentKey, { icon: typeof Sparkles; title: string; descr
     title: "Needs Assessment Agent",
     description: "Identifying treasury management needs from client data",
   },
+  historical: {
+    icon: Users,
+    title: "Historical Client Retrieval",
+    description: "Finding similar past clients from the bank's institutional memory",
+  },
   product: {
     icon: PackageSearch,
     title: "Product Recommendation Agent",
     description: "Matching needs against the ONB treasury product knowledge base",
+  },
+  roi: {
+    icon: Calculator,
+    title: "ROI Calculation Engine",
+    description: "Computing deterministic cost/benefit projections from client volumes",
   },
   compliance: {
     icon: ShieldCheck,
@@ -34,7 +44,7 @@ const AGENT_META: Record<AgentKey, { icon: typeof Sparkles; title: string; descr
   },
 };
 
-const AGENT_ORDER: AgentKey[] = ["profile", "needs", "product", "compliance", "executive"];
+const AGENT_ORDER: AgentKey[] = ["profile", "needs", "historical", "product", "roi", "compliance", "executive"];
 
 interface WorkflowGraphProps {
   statuses: Record<AgentKey, AgentStatus>;

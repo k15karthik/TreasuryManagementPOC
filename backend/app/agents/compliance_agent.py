@@ -14,6 +14,8 @@ Management Consultant. Check specifically for:
 - Conflicts between recommendations (e.g., recommending both a service and something that makes it redundant)
 - Missing products that clearly should have been recommended given the identified needs
 - Recommendations with insufficiently justified or too-low confidence (below 0.5) that should be flagged
+- Unrealistic ROI: a computed payback period longer than 36 months, or an implausibly high ROI%, should be \
+flagged with issue_type "ROI Unrealistic" so the consultant can sanity-check it before presenting
 
 Produce a validation report with an overall is_approved verdict, a list of any issues found (with severity), \
 the list of recommended product names that passed review cleanly, and brief overall notes."""
@@ -28,6 +30,13 @@ def build_prompt(state: GraphState) -> str:
     recs_lines = "\n\n".join(
         f"### {r.product} (confidence {r.confidence:.2f})\nReasoning: {r.reasoning}\n"
         f"Addresses: {', '.join(r.addresses_needs)}"
+        + (
+            f"\nCalculated ROI: ${r.roi_result.annual_savings_usd:,.0f}/year, "
+            f"payback in {r.roi_result.payback_period_months:.1f} months"
+            if r.roi_result and r.roi_result.payback_period_months is not None
+            else (f"\nCalculated ROI: ${r.roi_result.annual_savings_usd:,.0f}/year, no payback under current assumptions"
+                  if r.roi_result else "")
+        )
         for r in recs
     )
     not_rec_lines = "\n".join(f"- {p.product}: {p.reason}" for p in not_rec)

@@ -3,6 +3,7 @@ import { Bot, Building, Database, KeyRound } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { HistoricalIndexSection } from "@/components/settings/HistoricalIndexSection";
 
 const SETTINGS_SECTIONS = [
   {
@@ -20,7 +21,10 @@ const SETTINGS_SECTIONS = [
     rows: [
       { label: "Orchestration Framework", value: "LangGraph" },
       { label: "Language Model Provider", value: "OpenAI" },
-      { label: "Agents in Pipeline", value: "5 (Profile, Needs, Product, Compliance, Executive)" },
+      {
+        label: "Pipeline Steps",
+        value: "7 (Profile, Needs, Historical Retrieval, Product, ROI, Compliance, Executive)",
+      },
     ],
   },
   {
@@ -28,6 +32,7 @@ const SETTINGS_SECTIONS = [
     title: "Data Sources",
     rows: [
       { label: "Product Knowledge Base", value: "ChromaDB (local vector store)" },
+      { label: "Historical Client RAG", value: "ChromaDB (second, separate vector store)" },
       { label: "Analysis History", value: "SQLite" },
       { label: "Products Catalog", value: "12 ONB Treasury Management products" },
     ],
@@ -79,6 +84,9 @@ export default function SettingsPage() {
           </Card>
         );
       })}
+
+      <HistoricalIndexSection />
+
       <CardDescription className="text-center text-xs">
         Treasury Management Copilot v1.0.0 — Internal Proof of Concept
       </CardDescription>

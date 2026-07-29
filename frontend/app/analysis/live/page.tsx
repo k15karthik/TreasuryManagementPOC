@@ -7,6 +7,7 @@ import { AlertCircle } from "lucide-react";
 import { streamAnalysis } from "@/lib/api";
 import type { AgentKey, AgentStatus, ClientProfile, DoneEvent, WorkflowEvent } from "@/lib/types";
 import { PENDING_CLIENT_KEY } from "@/lib/constants";
+import { formatCurrency } from "@/lib/utils";
 import { WorkflowGraph } from "@/components/workflow/WorkflowGraph";
 import { ReasoningTimeline, type TimelineEntry } from "@/components/workflow/ReasoningTimeline";
 import { ExecutiveReport } from "@/components/report/ExecutiveReport";
@@ -16,7 +17,9 @@ import { Button } from "@/components/ui/button";
 const INITIAL_STATUSES: Record<AgentKey, AgentStatus> = {
   profile: "pending",
   needs: "pending",
+  historical: "pending",
   product: "pending",
+  roi: "pending",
   compliance: "pending",
   executive: "pending",
 };
@@ -29,9 +32,23 @@ function summarize(agent: AgentKey, output: unknown): string {
       return String((o.profile_analysis as Record<string, unknown>)?.business_summary ?? "");
     case "needs":
       return String((o.needs_assessment as Record<string, unknown>)?.summary ?? "");
+    case "historical": {
+      const similar = (o.similar_clients as unknown[]) ?? [];
+      return similar.length > 0
+        ? `${similar.length} similar historical client${similar.length === 1 ? "" : "s"} found`
+        : "No similar historical clients yet — this may be one of the first analyses in this industry";
+    }
     case "product": {
       const recs = (o.recommendations as unknown[]) ?? [];
       return `${recs.length} product${recs.length === 1 ? "" : "s"} recommended`;
+    }
+    case "roi": {
+      const recs = (o.recommendations as Record<string, unknown>[]) ?? [];
+      const total = recs.reduce((sum, r) => {
+        const roi = r.roi_result as Record<string, unknown> | undefined;
+        return sum + (typeof roi?.annual_savings_usd === "number" ? roi.annual_savings_usd : 0);
+      }, 0);
+      return `${formatCurrency(total)}/year in projected savings across all recommendations`;
     }
     case "compliance": {
       const report = o.compliance_report as Record<string, unknown>;
@@ -96,7 +113,15 @@ export default function LiveAnalysisPage() {
       if (!controller.signal.aborted) setError(err instanceof Error ? err.message : "Analysis failed");
     });
 
-    return () => controller.abort();
+    return () => {
+      // In dev, React Strict Mode intentionally mounts -> cleans up -> mounts again.
+      // The `started` guard above means only the *first* mount ever calls
+      // streamAnalysis, so if this cleanup actually aborted it, the second
+      // (guarded, no-op) mount would leave no stream running at all and the
+      // page would hang on "Waiting" forever. Only abort on a real unmount
+      // (production, or navigating away from this page in dev).
+      if (process.env.NODE_ENV !== "development") controller.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -128,6 +153,7 @@ export default function LiveAnalysisPage() {
 
       {done && (
         <ExecutiveReport
+          analysisId={done.analysis_id}
           client={done.client}
           profileAnalysis={done.profile_analysis}
           needsAssessment={done.needs_assessment}

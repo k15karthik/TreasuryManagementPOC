@@ -16,6 +16,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
   return (
     <div className="mx-auto max-w-3xl px-6 py-8">
       <ExecutiveReport
+        analysisId={id}
         client={analysis.client}
         profileAnalysis={analysis.profile_analysis}
         needsAssessment={analysis.needs_assessment}

@@ -40,6 +40,65 @@ export interface NeedsAssessment {
   summary: string;
 }
 
+export interface ROIAssumptions {
+  category: string;
+  implementation_cost_usd: number;
+  monthly_fee_usd: number;
+  labor_rate_per_hour_usd: number;
+  manual_check_cost_usd: number;
+  fraud_loss_reduction_rate: number;
+  annual_interest_rate: number;
+  source_note: string;
+}
+
+export interface ROIResult {
+  product: string;
+  category: string;
+  monthly_savings_usd: number;
+  annual_savings_usd: number;
+  cost_avoidance_usd: number;
+  implementation_cost_usd: number;
+  monthly_cost_usd: number;
+  payback_period_months: number | null;
+  roi_percentage_year_1: number;
+  calculation_steps: string[];
+  assumptions: ROIAssumptions;
+}
+
+export interface SimilarClient {
+  matched_analysis_id: string;
+  anonymous_id: string;
+  industry: string;
+  business_size: string;
+  growth_stage: string;
+  similarity_score: number;
+  recommended_products: string[];
+  consultant_accepted_products: string[];
+  consultant_rejected_products: string[];
+  roi_summary: string | null;
+  outcome_summary: string;
+}
+
+export interface RecommendationEvidence {
+  client_need_evidence: string;
+  knowledge_base_evidence: string;
+  historical_evidence: string;
+  roi_evidence: string | null;
+}
+
+export interface BenchmarkStat {
+  product_name: string;
+  percentage: number;
+  count: number;
+  cohort_size: number;
+}
+
+export interface HistoricalStatus {
+  indexed: number;
+  total_analyses: number;
+  pending: number;
+}
+
 export interface Recommendation {
   product: string;
   confidence: number;
@@ -47,6 +106,10 @@ export interface Recommendation {
   benefits: string[];
   estimated_roi: string;
   addresses_needs: string[];
+  // Absent on analyses generated before the ROI engine / Similar Client Retrieval existed —
+  // always check for undefined.
+  roi_result?: ROIResult;
+  evidence?: RecommendationEvidence;
 }
 
 export interface NotRecommendedProduct {
@@ -116,7 +179,7 @@ export interface AnalysisListItem {
   industry: string;
 }
 
-export type AgentKey = "profile" | "needs" | "product" | "compliance" | "executive";
+export type AgentKey = "profile" | "needs" | "historical" | "product" | "roi" | "compliance" | "executive";
 export type AgentStatus = "pending" | "thinking" | "complete";
 
 export interface AgentUpdateEvent {
@@ -146,6 +209,39 @@ export interface ErrorEvent {
 }
 
 export type WorkflowEvent = AgentUpdateEvent | DoneEvent | ErrorEvent;
+
+export type FeedbackAction = "accept" | "reject" | "modify";
+
+export type FeedbackReason =
+  | "Already owns product"
+  | "Budget constraints"
+  | "Customer declined"
+  | "Not a good fit"
+  | "Other";
+
+export interface FeedbackRecord {
+  id: string;
+  analysis_id: string;
+  product_name: string;
+  action: FeedbackAction;
+  reason: string | null;
+  note: string;
+  created_at: string;
+}
+
+export interface ProductFeedbackStats {
+  product_name: string;
+  accept_count: number;
+  reject_count: number;
+  modify_count: number;
+  total_count: number;
+  acceptance_rate: number;
+  common_rejection_reasons: string[];
+}
+
+export interface FeedbackStatsResponse {
+  per_product: ProductFeedbackStats[];
+}
 
 export interface Product {
   id: string;

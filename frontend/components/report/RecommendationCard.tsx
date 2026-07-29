@@ -1,11 +1,35 @@
 import { TrendingUp } from "lucide-react";
 
-import type { Recommendation } from "@/lib/types";
+import type { BenchmarkStat, FeedbackRecord, ProductFeedbackStats, Recommendation } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConfidenceGauge } from "./ConfidenceGauge";
+import { ROICard } from "./ROICard";
+import { RecommendationEvidencePanel } from "./RecommendationEvidencePanel";
+import { PeerBenchmarkCard } from "./PeerBenchmarkCard";
+import { FeedbackControls } from "./FeedbackControls";
 
-export function RecommendationCard({ recommendation, rank }: { recommendation: Recommendation; rank: number }) {
+interface RecommendationCardProps {
+  recommendation: Recommendation;
+  rank: number;
+  // Feedback controls only render when an analysisId is supplied, so this
+  // component still works standalone (e.g. in the live in-progress view).
+  analysisId?: string;
+  existingFeedback?: FeedbackRecord;
+  stats?: ProductFeedbackStats;
+  benchmark?: BenchmarkStat;
+  onFeedbackChange?: (record: FeedbackRecord) => void;
+}
+
+export function RecommendationCard({
+  recommendation,
+  rank,
+  analysisId,
+  existingFeedback,
+  stats,
+  benchmark,
+  onFeedbackChange,
+}: RecommendationCardProps) {
   return (
     <Card>
       <CardContent className="flex gap-4 p-5">
@@ -33,15 +57,32 @@ export function RecommendationCard({ recommendation, rank }: { recommendation: R
           )}
 
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <Badge variant="success" className="gap-1">
-              <TrendingUp className="h-3 w-3" /> {recommendation.estimated_roi}
-            </Badge>
+            {!recommendation.roi_result && (
+              <Badge variant="success" className="gap-1">
+                <TrendingUp className="h-3 w-3" /> {recommendation.estimated_roi}
+              </Badge>
+            )}
             {recommendation.addresses_needs.map((need) => (
               <Badge key={need} variant="outline">
                 {need}
               </Badge>
             ))}
           </div>
+
+          {recommendation.roi_result && <ROICard roi={recommendation.roi_result} />}
+
+          <RecommendationEvidencePanel evidence={recommendation.evidence} confidence={recommendation.confidence} />
+          <PeerBenchmarkCard stat={benchmark} />
+
+          {analysisId && onFeedbackChange && (
+            <FeedbackControls
+              analysisId={analysisId}
+              productName={recommendation.product}
+              existingFeedback={existingFeedback}
+              stats={stats}
+              onFeedbackChange={onFeedbackChange}
+            />
+          )}
         </div>
       </CardContent>
     </Card>

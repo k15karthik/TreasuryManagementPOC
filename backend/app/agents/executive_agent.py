@@ -3,7 +3,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.agents.base import get_llm
 from app.graph.state import GraphState
-from app.models.agent_outputs import ExecutiveSummary
+from app.models.agent_outputs import ExecutiveSummary, Recommendation
 
 SYSTEM_PROMPT = """You are a senior Treasury Management Consultant preparing an executive-quality \
 recommendation report to present to a client's CFO or Treasurer, and to brief your bank's relationship \
@@ -12,7 +12,29 @@ these sections: Client Overview, Business Needs, Recommended Products, Business 
 Priority (ordered by impact and urgency), Potential Risks, and Estimated Business Impact. Also propose a \
 short agenda for the next client meeting, and identify any reasonable cross-sell opportunities beyond the \
 core recommendations. Write in clear, professional, executive prose — no jargon without explanation. Only \
-include products that passed compliance review in recommended_products."""
+include products that passed compliance review in recommended_products.
+
+For every recommended product, explicitly cite its calculated ROI — annual savings and/or cost avoidance, \
+payback period, and year-1 ROI percentage — using the real figures provided below, not vague language like \
+"significant savings." Do this in each product's Implementation Priority rationale, and roll the headline \
+figures into the Business Benefits and Estimated Business Impact narratives too. If a product has no \
+calculated figures (only a narrative estimate), summarize that estimate instead — never invent a number."""
+
+
+def _roi_line(rec: Recommendation) -> str:
+    if rec.roi_result:
+        roi = rec.roi_result
+        payback = (
+            f"payback in {roi.payback_period_months:.1f} months"
+            if roi.payback_period_months is not None
+            else "no payback under current cost assumptions"
+        )
+        cost_avoidance = f" plus ${roi.cost_avoidance_usd:,.0f}/year in cost avoidance" if roi.cost_avoidance_usd > 0 else ""
+        return (
+            f"Calculated ROI: ${roi.annual_savings_usd:,.0f}/year in savings{cost_avoidance}, "
+            f"{payback}, {roi.roi_percentage_year_1:.0f}% year-1 ROI."
+        )
+    return f"Estimated ROI (narrative only — no calculated figures available): {rec.estimated_roi}"
 
 
 def build_prompt(state: GraphState) -> str:
@@ -25,7 +47,7 @@ def build_prompt(state: GraphState) -> str:
     needs_lines = "\n".join(f"- {n.need} (severity {n.severity}/10): {n.evidence}" for n in needs.identified_needs)
     recs_lines = "\n\n".join(
         f"### {r.product} (confidence {r.confidence:.2f})\nReasoning: {r.reasoning}\n"
-        f"Benefits: {', '.join(r.benefits)}\nEstimated ROI: {r.estimated_roi}"
+        f"Benefits: {', '.join(r.benefits)}\n{_roi_line(r)}"
         for r in recs
     )
 

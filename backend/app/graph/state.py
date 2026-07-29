@@ -8,6 +8,7 @@ from app.models.agent_outputs import (
     NeedsAssessment,
     ProfileAnalysis,
     Recommendation,
+    SimilarClient,
 )
 from app.models.client import ClientProfile
 
@@ -16,6 +17,7 @@ class GraphState(TypedDict, total=False):
     client: ClientProfile
     profile_analysis: ProfileAnalysis
     needs_assessment: NeedsAssessment
+    similar_clients: list[SimilarClient]
     recommendations: list[Recommendation]
     not_recommended: list[NotRecommendedProduct]
     compliance_report: ComplianceReport

@@ -15,11 +15,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RiskMeter } from "./RiskMeter";
 import { ComplexityMeter } from "./ComplexityMeter";
-import { RecommendationCard } from "./RecommendationCard";
+import { RecommendationFeedbackList } from "./RecommendationFeedbackList";
+import { SimilarClientsCard } from "./SimilarClientsCard";
 import { NotRecommendedList } from "./NotRecommendedList";
 import { NextMeetingAgenda } from "./NextMeetingAgenda";
 
 export interface ExecutiveReportProps {
+  analysisId: string;
   client: ClientProfile;
   profileAnalysis: ProfileAnalysis;
   needsAssessment: NeedsAssessment;
@@ -36,6 +38,7 @@ const PRIORITY_VARIANT: Record<string, "destructive" | "warning" | "success"> = 
 };
 
 export function ExecutiveReport({
+  analysisId,
   client,
   profileAnalysis,
   needsAssessment,
@@ -142,12 +145,10 @@ export function ExecutiveReport({
 
       <div>
         <h3 className="mb-3 text-sm font-semibold text-foreground">Recommended Products</h3>
-        <div className="space-y-3">
-          {recommendations.map((rec, idx) => (
-            <RecommendationCard key={rec.product} recommendation={rec} rank={idx + 1} />
-          ))}
-        </div>
+        <RecommendationFeedbackList analysisId={analysisId} recommendations={recommendations} />
       </div>
+
+      <SimilarClientsCard analysisId={analysisId} />
 
       <Card>
         <CardHeader>

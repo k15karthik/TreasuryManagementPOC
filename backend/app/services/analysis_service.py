@@ -17,6 +17,7 @@ from app.graph.state import GraphState
 from app.graph.workflow import NODE_LABELS, NODE_ORDER, workflow
 from app.models.client import ClientProfile
 from app.models.db_models import Analysis, utc_isoformat
+from app.services.historical_service import index_completed_analysis, persist_similar_client_matches
 
 
 def _sse(event: dict[str, Any]) -> str:
@@ -24,11 +25,13 @@ def _sse(event: dict[str, Any]) -> str:
 
 
 def _dump(value: Any) -> Any:
-    """Recursively converts Pydantic models (and lists of them) into plain JSON-able dicts."""
+    """Recursively converts Pydantic models (and lists/dicts containing them) into plain JSON-able values."""
     if hasattr(value, "model_dump"):
         return value.model_dump(mode="json")
     if isinstance(value, list):
         return [_dump(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _dump(v) for k, v in value.items()}
     return value
 
 
@@ -60,6 +63,13 @@ async def run_analysis_stream(client: ClientProfile, db: Session) -> AsyncGenera
         return
 
     analysis = _persist_analysis(client, accumulated, db)
+
+    # Best-effort institutional-memory writes — out-of-band from the Analysis table itself,
+    # same reasoning as ConsultantFeedback living separately. Both are wrapped in try/except
+    # internally, so a failure here never breaks the analysis that was just persisted.
+    dumped_accumulated = _dump(accumulated)
+    index_completed_analysis(analysis, dumped_accumulated, db)
+    persist_similar_client_matches(analysis.id, accumulated.get("similar_clients", []), db)
 
     yield _sse(
         {
