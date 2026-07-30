@@ -28,6 +28,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Treasury Management Copilot API", version="1.0.0", lifespan=lifespan)
+print("FASTAPI APP:", app)
+print("DOCS URL:", app.docs_url)
+print("OPENAPI URL:", app.openapi_url)
+
+for route in app.routes:
+    print("ROUTE:", route.path)
 
 app.add_middleware(
     CORSMiddleware,
