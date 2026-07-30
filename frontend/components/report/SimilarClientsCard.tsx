@@ -4,25 +4,34 @@ import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 
 import type { SimilarClient } from "@/lib/types";
-import { getSimilarClients } from "@/lib/api";
+import { ApiError, getSimilarClients } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
+type LoadState = "loading" | "ready" | "not-found" | "error";
+
 // This is a genuine top-level fetch boundary (one report-level section, not per-recommendation
 // data like PeerBenchmarkCard/RecommendationEvidencePanel), so it owns its own request.
 export function SimilarClientsCard({ analysisId }: { analysisId: string }) {
-  const [clients, setClients] = useState<SimilarClient[] | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [clients, setClients] = useState<SimilarClient[]>([]);
+  const [state, setState] = useState<LoadState>("loading");
 
   useEffect(() => {
     let cancelled = false;
+    setState("loading");
     getSimilarClients(analysisId)
       .then((data) => {
-        if (!cancelled) setClients(data);
+        if (cancelled) return;
+        setClients(data);
+        setState("ready");
       })
-      .catch(() => {
-        if (!cancelled) setFailed(true);
+      .catch((err) => {
+        if (cancelled) return;
+        // A 404 here means this specific backend instance's storage doesn't have this
+        // analysis right now — not that the data was never there. Worth saying plainly
+        // rather than implying something is permanently missing.
+        setState(err instanceof ApiError && err.status === 404 ? "not-found" : "error");
       });
     return () => {
       cancelled = true;
@@ -41,22 +50,32 @@ export function SimilarClientsCard({ analysisId }: { analysisId: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        {clients === null && !failed && (
+        {state === "loading" && (
           <>
             <Skeleton className="h-16 w-full" />
             <Skeleton className="h-16 w-full" />
           </>
         )}
 
-        {failed && <p className="py-4 text-center text-xs text-muted-foreground">Could not load similar-client data.</p>}
+        {state === "error" && (
+          <p className="py-4 text-center text-xs text-muted-foreground">
+            Could not load similar-client data right now. Try refreshing the page.
+          </p>
+        )}
 
-        {clients !== null && clients.length === 0 && (
+        {state === "not-found" && (
+          <p className="py-4 text-center text-xs text-muted-foreground">
+            Similar-client data is temporarily unavailable for this analysis. Try refreshing the page.
+          </p>
+        )}
+
+        {state === "ready" && clients.length === 0 && (
           <p className="py-6 text-center text-xs text-muted-foreground">
             No similar historical clients found yet — this may be one of the first analyses in this industry.
           </p>
         )}
 
-        {clients?.map((c) => (
+        {clients.map((c) => (
           <details key={c.matched_analysis_id} className="group rounded-lg border border-border p-3">
             <summary className="flex cursor-pointer select-none items-center justify-between gap-2">
               <div className="flex items-center gap-2">

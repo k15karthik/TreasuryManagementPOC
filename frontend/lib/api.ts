@@ -17,10 +17,22 @@ import type {
 // keeps every `${API_BASE}${path}` call below from producing "//api/...".
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
+// Carries the HTTP status so callers can distinguish "not found" (404 — e.g. this
+// analysis genuinely isn't visible from whichever backend instance served this
+// request) from a transient network/server failure, rather than treating both as
+// an identical opaque error.
+export class ApiError extends Error {
+  status: number;
+  constructor(path: string, status: number) {
+    super(`Request to ${path} failed: ${status}`);
+    this.status = status;
+  }
+}
+
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
   if (!res.ok) {
-    throw new Error(`Request to ${path} failed: ${res.status}`);
+    throw new ApiError(path, res.status);
   }
   return res.json() as Promise<T>;
 }
@@ -32,7 +44,7 @@ async function postJSON<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-    throw new Error(`Request to ${path} failed: ${res.status}`);
+    throw new ApiError(path, res.status);
   }
   return res.json() as Promise<T>;
 }
