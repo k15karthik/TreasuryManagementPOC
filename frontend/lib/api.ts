@@ -57,8 +57,28 @@ export function listAnalyses(): Promise<AnalysisListItem[]> {
   return getJSON<AnalysisListItem[]>("/api/analyses");
 }
 
-export function getAnalysis(id: string): Promise<AnalysisRecord> {
-  return getJSON<AnalysisRecord>(`/api/analyses/${id}`);
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Right after an analysis is created, the redirect to view it can land on a different
+// backend instance than the one that just wrote it — the write is real, but briefly
+// invisible from wherever this particular request lands. A couple of short retries on a
+// 404 covers that window without treating a genuine "not found" or network error any
+// differently (those still throw immediately).
+export async function getAnalysis(id: string): Promise<AnalysisRecord> {
+  const retryDelaysMs = [0, 400, 900];
+  let lastError: unknown;
+  for (const delay of retryDelaysMs) {
+    if (delay) await sleep(delay);
+    try {
+      return await getJSON<AnalysisRecord>(`/api/analyses/${id}`);
+    } catch (err) {
+      lastError = err;
+      if (!(err instanceof ApiError) || err.status !== 404) throw err;
+    }
+  }
+  throw lastError;
 }
 
 export function submitFeedback(

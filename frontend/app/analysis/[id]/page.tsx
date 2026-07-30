@@ -1,10 +1,7 @@
 import Link from "next/link";
-import { RefreshCw } from "lucide-react";
 
 import { getAnalysis } from "@/lib/api";
 import { ExecutiveReport } from "@/components/report/ExecutiveReport";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default async function AnalysisPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,29 +10,23 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
   try {
     analysis = await getAnalysis(id);
   } catch {
-    // A failed load here doesn't reliably mean the analysis never existed — the backend
-    // can serve different requests from different instances that don't share storage, so
-    // the same ID can succeed a moment later. Treat this as recoverable, not a hard 404.
+    // getAnalysis() already retries past the common transient case (the write briefly
+    // invisible from wherever this request lands). If it still failed, keep this small —
+    // a one-line notice, not a full-page takeover — since the report itself may well be
+    // fine on the very next request.
     return (
       <div className="mx-auto max-w-3xl px-6 py-8">
-        <Card className="border-warning/40 bg-warning/5">
-          <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
-            <RefreshCw className="h-6 w-6 text-warning" />
-            <p className="text-sm font-medium text-foreground">This report is temporarily unavailable</p>
-            <p className="max-w-sm text-xs text-muted-foreground">
-              It can take a moment to become available right after generation. Try refreshing, or check Past
-              Analyses in the meantime.
-            </p>
-            <div className="flex gap-2 pt-2">
-              <Button asChild size="sm" variant="outline">
-                <Link href={`/analysis/${id}`}>Refresh</Link>
-              </Button>
-              <Button asChild size="sm" variant="outline">
-                <Link href="/past-analyses">Past Analyses</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <p className="py-8 text-center text-xs text-muted-foreground">
+          This report isn&apos;t loading right now.{" "}
+          <Link href={`/analysis/${id}`} className="text-primary underline">
+            Try again
+          </Link>
+          , or check{" "}
+          <Link href="/past-analyses" className="text-primary underline">
+            Past Analyses
+          </Link>
+          .
+        </p>
       </div>
     );
   }
