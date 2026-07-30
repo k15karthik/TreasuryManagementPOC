@@ -65,40 +65,6 @@ export interface ROIResult {
   assumptions: ROIAssumptions;
 }
 
-export interface SimilarClient {
-  matched_analysis_id: string;
-  anonymous_id: string;
-  industry: string;
-  business_size: string;
-  growth_stage: string;
-  similarity_score: number;
-  recommended_products: string[];
-  consultant_accepted_products: string[];
-  consultant_rejected_products: string[];
-  roi_summary: string | null;
-  outcome_summary: string;
-}
-
-export interface RecommendationEvidence {
-  client_need_evidence: string;
-  knowledge_base_evidence: string;
-  historical_evidence: string;
-  roi_evidence: string | null;
-}
-
-export interface BenchmarkStat {
-  product_name: string;
-  percentage: number;
-  count: number;
-  cohort_size: number;
-}
-
-export interface HistoricalStatus {
-  indexed: number;
-  total_analyses: number;
-  pending: number;
-}
-
 export interface Recommendation {
   product: string;
   confidence: number;
@@ -106,10 +72,8 @@ export interface Recommendation {
   benefits: string[];
   estimated_roi: string;
   addresses_needs: string[];
-  // Absent on analyses generated before the ROI engine / Similar Client Retrieval existed —
-  // always check for undefined.
+  // Absent on analyses generated before the ROI engine existed — always check for undefined.
   roi_result?: ROIResult;
-  evidence?: RecommendationEvidence;
 }
 
 export interface NotRecommendedProduct {
@@ -179,7 +143,7 @@ export interface AnalysisListItem {
   industry: string;
 }
 
-export type AgentKey = "profile" | "needs" | "historical" | "product" | "roi" | "compliance" | "executive";
+export type AgentKey = "profile" | "needs" | "product" | "roi" | "compliance" | "executive";
 export type AgentStatus = "pending" | "thinking" | "complete";
 
 export interface AgentUpdateEvent {

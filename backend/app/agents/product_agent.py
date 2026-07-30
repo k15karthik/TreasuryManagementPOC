@@ -8,7 +8,7 @@ from app.database.session import SessionLocal
 from app.graph.state import GraphState
 from app.knowledge.loader import load_products
 from app.knowledge.vector_store import query_products
-from app.models.agent_outputs import ProductRecommendations, SimilarClient
+from app.models.agent_outputs import ProductRecommendations
 from app.services.feedback_service import build_feedback_context
 
 SYSTEM_PROMPT = """You are a Treasury Management product specialist at a regional bank. You are given a \
@@ -23,60 +23,16 @@ retrieved from the product knowledge base (via semantic search against the clien
 3. For any candidate product you deliberately did NOT recommend, list it under not_recommended with a \
    clear, specific reason (e.g., already in place, insufficient volume to justify cost, doesn't address a \
    real need for this client).
-4. For every recommendation, also populate its `evidence` object with three strands: \
-   `client_need_evidence` (which specific identified needs this addresses, and why), \
-   `knowledge_base_evidence` (why this product fits per the catalog description/ideal-client fit), and \
-   `historical_evidence` (what similar past clients suggest, if any were shown to you below — if none were \
-   shown, say plainly "No comparable historical clients found" rather than fabricate a pattern). \
-   Leave `roi_evidence` as null — a separate deterministic step fills that in afterward.
 
 You may also be shown a "Consultant Feedback History" section, summarizing how consultants have responded \
 to these same products for OTHER past clients. Treat it as soft context, not a rule — a product a consultant \
 rejected for one client's specific circumstances (e.g., budget, already owned) may still be exactly right \
 for this client. Never treat historical rejection alone as a reason to exclude a product that otherwise fits.
 
-You may also be shown a "Similar Historical Clients" section — institutional memory from the bank's past \
-engagements with comparable clients. Use it ONLY as supporting evidence that can increase your confidence in \
-a recommendation that is already justified by this client's own needs. Do NOT copy a peer's recommendations \
-just because they're similar, and do NOT let a lack of historical precedent talk you out of a product that \
-genuinely fits this client — business logic from the client's own data always comes first.
-
 Only choose products that appear in the candidate list — do not invent product names."""
 
 
-def build_historical_context(similar_clients: list[SimilarClient]) -> str:
-    """Formats the top-5 similar historical clients as supporting evidence for the prompt.
-    Returns "" (not a hollow header) when there's nothing yet — same pattern as
-    build_feedback_context — so a brand-new industry bucket's prompt doesn't show an empty
-    section."""
-    if not similar_clients:
-        return ""
-
-    blocks = []
-    for sc in similar_clients:
-        if sc.consultant_accepted_products and sc.consultant_rejected_products:
-            feedback_line = (
-                f"Mixed — accepted {', '.join(sc.consultant_accepted_products)}; "
-                f"rejected {', '.join(sc.consultant_rejected_products)}"
-            )
-        elif sc.consultant_accepted_products:
-            feedback_line = "Accepted"
-        elif sc.consultant_rejected_products:
-            feedback_line = "Rejected"
-        else:
-            feedback_line = "Not yet reviewed"
-
-        blocks.append(
-            f"{sc.anonymous_id}\n"
-            f"Similarity: {sc.similarity_score * 100:.0f}%\n"
-            f"Recommended: {', '.join(sc.recommended_products) or 'None'}\n"
-            f"Consultant Feedback: {feedback_line}"
-        )
-
-    return "Similar Historical Clients (supporting evidence only — never a rule):\n" + "\n---\n".join(blocks)
-
-
-def build_prompt(state: GraphState, candidates: list[dict], feedback_context: str, historical_context: str) -> str:
+def build_prompt(state: GraphState, candidates: list[dict], feedback_context: str) -> str:
     client = state["client"]
     profile = state["profile_analysis"]
     needs = state["needs_assessment"]
@@ -97,14 +53,13 @@ Identified Needs:
 
 Candidate Products (from knowledge base semantic search):
 {candidates_lines}
-{f"\n{historical_context}\n" if historical_context else ""}{f"\n{feedback_context}\n" if feedback_context else ""}
+{f"\n{feedback_context}\n" if feedback_context else ""}
 Produce recommendations and not_recommended lists per your instructions.
 """
 
 
 async def run_product_agent(state: GraphState) -> dict:
     needs = state["needs_assessment"]
-    similar_clients = state.get("similar_clients", [])
 
     # Retrieve candidate products per identified need via vector similarity search,
     # deduplicating by product id since multiple needs may surface the same product.
@@ -126,14 +81,9 @@ async def run_product_agent(state: GraphState) -> dict:
     with SessionLocal() as db:
         feedback_context = build_feedback_context(db, [p["name"] for p in candidates])
 
-    historical_context = build_historical_context(similar_clients)
-
     llm = get_llm(temperature=0.3).with_structured_output(ProductRecommendations)
     result: ProductRecommendations = await llm.ainvoke(
-        [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=build_prompt(state, candidates, feedback_context, historical_context)),
-        ]
+        [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=build_prompt(state, candidates, feedback_context))]
     )
     return {
         "recommendations": result.recommendations,

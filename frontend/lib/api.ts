@@ -1,15 +1,12 @@
 import type {
   AnalysisListItem,
   AnalysisRecord,
-  BenchmarkStat,
   ClientProfile,
   FeedbackAction,
   FeedbackRecord,
   FeedbackReason,
   FeedbackStatsResponse,
-  HistoricalStatus,
   Product,
-  SimilarClient,
   WorkflowEvent,
 } from "./types";
 
@@ -94,22 +91,6 @@ export function listFeedback(analysisId: string): Promise<FeedbackRecord[]> {
 
 export function getFeedbackStats(): Promise<FeedbackStatsResponse> {
   return getJSON<FeedbackStatsResponse>("/api/feedback/stats");
-}
-
-export function getSimilarClients(analysisId: string): Promise<SimilarClient[]> {
-  return getJSON<SimilarClient[]>(`/api/historical/analyses/${analysisId}/similar-clients`);
-}
-
-export function getBenchmarks(analysisId: string): Promise<BenchmarkStat[]> {
-  return getJSON<BenchmarkStat[]>(`/api/historical/analyses/${analysisId}/benchmarks`);
-}
-
-export function getHistoricalStatus(): Promise<HistoricalStatus> {
-  return getJSON<HistoricalStatus>("/api/historical/status");
-}
-
-export function triggerReindex(): Promise<{ status: string; count: number }> {
-  return postJSON<{ status: string; count: number }>("/api/historical/reindex", {});
 }
 
 /**

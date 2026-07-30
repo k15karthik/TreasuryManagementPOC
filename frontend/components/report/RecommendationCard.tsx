@@ -1,12 +1,10 @@
 import { TrendingUp } from "lucide-react";
 
-import type { BenchmarkStat, FeedbackRecord, ProductFeedbackStats, Recommendation } from "@/lib/types";
+import type { FeedbackRecord, ProductFeedbackStats, Recommendation } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConfidenceGauge } from "./ConfidenceGauge";
 import { ROICard } from "./ROICard";
-import { RecommendationEvidencePanel } from "./RecommendationEvidencePanel";
-import { PeerBenchmarkCard } from "./PeerBenchmarkCard";
 import { FeedbackControls } from "./FeedbackControls";
 
 interface RecommendationCardProps {
@@ -17,7 +15,6 @@ interface RecommendationCardProps {
   analysisId?: string;
   existingFeedback?: FeedbackRecord;
   stats?: ProductFeedbackStats;
-  benchmark?: BenchmarkStat;
   onFeedbackChange?: (record: FeedbackRecord) => void;
 }
 
@@ -27,7 +24,6 @@ export function RecommendationCard({
   analysisId,
   existingFeedback,
   stats,
-  benchmark,
   onFeedbackChange,
 }: RecommendationCardProps) {
   return (
@@ -70,9 +66,6 @@ export function RecommendationCard({
           </div>
 
           {recommendation.roi_result && <ROICard roi={recommendation.roi_result} />}
-
-          <RecommendationEvidencePanel evidence={recommendation.evidence} confidence={recommendation.confidence} />
-          <PeerBenchmarkCard stat={benchmark} />
 
           {analysisId && onFeedbackChange && (
             <FeedbackControls

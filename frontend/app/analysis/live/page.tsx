@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 const INITIAL_STATUSES: Record<AgentKey, AgentStatus> = {
   profile: "pending",
   needs: "pending",
-  historical: "pending",
   product: "pending",
   roi: "pending",
   compliance: "pending",
@@ -32,12 +31,6 @@ function summarize(agent: AgentKey, output: unknown): string {
       return String((o.profile_analysis as Record<string, unknown>)?.business_summary ?? "");
     case "needs":
       return String((o.needs_assessment as Record<string, unknown>)?.summary ?? "");
-    case "historical": {
-      const similar = (o.similar_clients as unknown[]) ?? [];
-      return similar.length > 0
-        ? `${similar.length} similar historical client${similar.length === 1 ? "" : "s"} found`
-        : "No similar historical clients yet — this may be one of the first analyses in this industry";
-    }
     case "product": {
       const recs = (o.recommendations as unknown[]) ?? [];
       return `${recs.length} product${recs.length === 1 ? "" : "s"} recommended`;

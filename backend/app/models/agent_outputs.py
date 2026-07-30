@@ -61,35 +61,6 @@ class ROIResult(BaseModel):
     assumptions: ROIAssumptions
 
 
-class SimilarClient(BaseModel):
-    """One historically similar past client, surfaced as supporting evidence for the
-    Product Recommendation Agent and for the report's "Similar Clients" section.
-    Deterministically assembled from Chroma + SQL joins — never LLM-produced, and never
-    carries any client-identifying information (anonymous_id is a bucket-scoped counter)."""
-
-    matched_analysis_id: str = Field(..., description="Internal analysis UUID — opaque, not client-identifying, used only for persistence joins")
-    anonymous_id: str = Field(..., description="e.g. 'Manufacturing Client #17' — never a real company name")
-    industry: str = Field(..., description="Industry bucket label, e.g. 'Manufacturing'")
-    business_size: str
-    growth_stage: str
-    similarity_score: float = Field(..., ge=0, le=1, description="0-1 cosine similarity to the current client")
-    recommended_products: list[str] = Field(default_factory=list)
-    consultant_accepted_products: list[str] = Field(default_factory=list)
-    consultant_rejected_products: list[str] = Field(default_factory=list)
-    roi_summary: str | None = Field(default=None, description="e.g. 'Average 143% year-1 ROI across recommended products'")
-    outcome_summary: str = Field(..., description="Consultant acceptance outcome — not real-world adoption data, which this app doesn't track")
-
-
-class RecommendationEvidence(BaseModel):
-    """The explainability breakdown behind one recommendation: four independent strands
-    of evidence, populated by whoever actually has that data at their point in the pipeline."""
-
-    client_need_evidence: str = Field(..., description="Which specific client needs this product addresses, and why")
-    knowledge_base_evidence: str = Field(..., description="Why this product fits per the treasury product catalog")
-    historical_evidence: str = Field(..., description="What similar past clients suggest — or an honest 'none found' statement")
-    roi_evidence: str | None = Field(default=None, description="Filled in by the ROI engine after this is first created; None until then")
-
-
 class Recommendation(BaseModel):
     """A single recommended treasury product."""
 
@@ -100,7 +71,6 @@ class Recommendation(BaseModel):
     estimated_roi: str = Field(..., description="Narrative or quantified estimated ROI / business impact")
     addresses_needs: list[str] = Field(default_factory=list, description="Which identified needs this product addresses")
     roi_result: ROIResult | None = Field(default=None, description="Deterministically computed ROI; absent on analyses run before the ROI engine existed")
-    evidence: RecommendationEvidence | None = Field(default=None, description="4-strand explainability breakdown; absent on analyses run before this existed")
 
 
 class NotRecommendedProduct(BaseModel):

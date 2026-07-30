@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -66,61 +66,3 @@ class ConsultantFeedback(Base):
     reason: Mapped[str] = mapped_column(String, default="")
     note: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
-
-
-class HistoricalEmbedding(Base):
-    """Tracks that one Analysis has been embedded into the historical-client vector store,
-    plus the anonymized identity assigned to it. The vector itself lives in Chroma
-    (`historical_analyses` collection) — this table is the SQL system of record: it's what
-    a future Postgres+pgvector migration would carry over, and what a reindex rebuilds from.
-
-    `recommended_products_json` is a deliberate denormalized cache of that analysis's
-    recommended product names, so peer-benchmark aggregation across potentially thousands
-    of rows never has to json.loads() every full Analysis.recommendations_json blob just to
-    extract product names.
-    """
-
-    __tablename__ = "historical_embeddings"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
-    analysis_id: Mapped[str] = mapped_column(String, ForeignKey("analyses.id"), unique=True, index=True)
-    anonymous_id: Mapped[str] = mapped_column(String)
-    industry_bucket: Mapped[str] = mapped_column(String, index=True)
-    recommended_products_json: Mapped[str] = mapped_column(Text, default="[]")
-    chroma_document_id: Mapped[str] = mapped_column(String)
-    embedding_model: Mapped[str] = mapped_column(String)
-    indexed_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
-
-
-class SimilarClientMatch(Base):
-    """One row per (analysis, matched historical peer) pair — a point-in-time snapshot of
-    exactly what Historical Client Retrieval found and showed to the Product Recommendation
-    Agent when this analysis ran. Snapshotted (not recomputed on read) for the same audit-trail
-    reasoning ConsultantFeedback already uses: what a consultant sees shouldn't silently drift
-    if the matched historical analysis's own feedback/ROI changes later.
-    """
-
-    __tablename__ = "similar_client_matches"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
-    analysis_id: Mapped[str] = mapped_column(String, ForeignKey("analyses.id"), index=True)
-    rank: Mapped[int] = mapped_column(Integer)
-    matched_analysis_id: Mapped[str] = mapped_column(String, ForeignKey("analyses.id"))
-    anonymous_id: Mapped[str] = mapped_column(String)
-    similarity_score: Mapped[float] = mapped_column(Float)
-    snapshot_json: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
-
-
-class IndustryBucketCounter(Base):
-    """Atomic per-bucket counter backing anonymous IDs like 'Manufacturing Client #17'.
-    Incremented via a single INSERT ... ON CONFLICT ... DO UPDATE ... RETURNING statement
-    (see historical_service.next_anonymous_id) rather than a read-then-write SELECT COUNT(*),
-    since the reindex endpoint runs on a background thread genuinely concurrently with live
-    analyses completing on the main thread.
-    """
-
-    __tablename__ = "industry_bucket_counters"
-
-    industry_bucket: Mapped[str] = mapped_column(String, primary_key=True)
-    next_n: Mapped[int] = mapped_column(Integer, default=0)

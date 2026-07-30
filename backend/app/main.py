@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes_analysis import router as analysis_router
 from app.api.routes_feedback import router as feedback_router
 from app.api.routes_health import router as health_router
-from app.api.routes_historical import router as historical_router
 from app.api.routes_knowledge import router as knowledge_router
 from app.config import settings
 from app.database.init_db import init_db
@@ -47,4 +46,3 @@ app.include_router(health_router)
 app.include_router(knowledge_router)
 app.include_router(analysis_router)
 app.include_router(feedback_router)
-app.include_router(historical_router)

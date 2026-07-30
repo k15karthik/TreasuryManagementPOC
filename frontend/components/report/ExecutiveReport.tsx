@@ -16,7 +16,6 @@ import { Separator } from "@/components/ui/separator";
 import { RiskMeter } from "./RiskMeter";
 import { ComplexityMeter } from "./ComplexityMeter";
 import { RecommendationFeedbackList } from "./RecommendationFeedbackList";
-import { SimilarClientsCard } from "./SimilarClientsCard";
 import { NotRecommendedList } from "./NotRecommendedList";
 import { NextMeetingAgenda } from "./NextMeetingAgenda";
 
@@ -147,8 +146,6 @@ export function ExecutiveReport({
         <h3 className="mb-3 text-sm font-semibold text-foreground">Recommended Products</h3>
         <RecommendationFeedbackList analysisId={analysisId} recommendations={recommendations} />
       </div>
-
-      <SimilarClientsCard analysisId={analysisId} />
 
       <Card>
         <CardHeader>
