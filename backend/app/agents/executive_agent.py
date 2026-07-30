@@ -14,6 +14,10 @@ short agenda for the next client meeting, and identify any reasonable cross-sell
 core recommendations. Write in clear, professional, executive prose — no jargon without explanation. Only \
 include products that passed compliance review in recommended_products.
 
+Cross-sell opportunities must never include a product the client already has (see "Already has these banking \
+products" below) or one that's already in recommended_products — a cross-sell suggestion only makes sense for \
+something genuinely new to this client.
+
 For every recommended product, explicitly cite its calculated ROI — annual savings and/or cost avoidance, \
 payback period, and year-1 ROI percentage — using the real figures provided below, not vague language like \
 "significant savings." Do this in each product's Implementation Priority rationale, and roll the headline \
@@ -56,6 +60,7 @@ Business Summary: {profile.business_summary}
 Company Size: {profile.company_size} | Growth Stage: {profile.growth_stage}
 Operational Complexity: {profile.operational_complexity}/10
 Risk Factors: {', '.join(profile.risk_factors) or 'None identified'}
+Already has these banking products: {', '.join(client.current_banking_products) or 'None'}
 
 Identified Needs:
 {needs_lines or 'None'}
