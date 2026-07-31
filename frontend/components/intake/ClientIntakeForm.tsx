@@ -337,7 +337,10 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
                 <FormItem>
                   <FormLabel>Monthly ACH Volume</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} step={1000} {...field} />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input type="number" min={0} step={1000} className="pl-6" {...field} />
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
@@ -349,7 +352,10 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
                 <FormItem>
                   <FormLabel>Monthly Wire Volume</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} step={1000} {...field} />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input type="number" min={0} step={1000} className="pl-6" {...field} />
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
@@ -361,7 +367,10 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
                 <FormItem>
                   <FormLabel>Monthly Check Volume</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} step={1000} {...field} />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input type="number" min={0} step={1000} className="pl-6" {...field} />
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
@@ -373,7 +382,10 @@ export function ClientIntakeForm({ onSubmit, isSubmitting }: ClientIntakeFormPro
                 <FormItem>
                   <FormLabel>Monthly Cash Deposits</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} step={1000} {...field} />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input type="number" min={0} step={1000} className="pl-6" {...field} />
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
