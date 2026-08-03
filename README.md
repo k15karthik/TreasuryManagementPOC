@@ -184,7 +184,7 @@ for one-click loading) includes four profiles spanning distinct treasury needs:
 
 ## Knowledge base
 
-`backend/app/knowledge/products.json` contains 12 ONB Treasury Management products, each with:
+`backend/app/knowledge/products.json` contains 13 ONB Treasury Management products, each with:
 
 ```json
 {
@@ -202,7 +202,7 @@ for one-click loading) includes four profiles spanning distinct treasury needs:
 
 Products: Positive Pay, ACH Origination, Lockbox, Remote Deposit Capture, Cash Vault, Zero Balance
 Accounts, Sweep Accounts, Merchant Services, Wire Transfers, Controlled Disbursement, Business Bill
-Pay, Information Reporting.
+Pay, Information Reporting, Commercial Card Program.
 
 At startup, each product is embedded (OpenAI `text-embedding-3-small`) and stored in a persistent
 ChromaDB collection (`backend/data/chroma/`). The Product Recommendation Agent runs a semantic

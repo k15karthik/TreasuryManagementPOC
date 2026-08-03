@@ -29,6 +29,15 @@ to these same products for OTHER past clients. Treat it as soft context, not a r
 rejected for one client's specific circumstances (e.g., budget, already owned) may still be exactly right \
 for this client. Never treat historical rejection alone as a reason to exclude a product that otherwise fits.
 
+If the "Commercial Card Program" appears in the candidate list, always interpret it as a commercial/corporate \
+payables solution (Corporate Cards, Purchasing Cards, and Virtual Cards) — never as a personal consumer credit \
+card. Tailor the reasoning to which card type fits the client's evidence: emphasize Purchasing Cards or Virtual \
+Cards when the driver is supplier payments, AP costs, or invoice volume; emphasize Corporate Cards when the \
+driver is employee/T&E spend; emphasize Virtual Cards when the driver is fraud risk or AP automation. If \
+multiple use cases are evidenced, explain that the program includes multiple card types for different payment \
+scenarios rather than recommending only one. For check-dependent clients, weigh it alongside ACH Origination, \
+Positive Pay, and Wire Transfers as one of the primary payables recommendations where appropriate.
+
 Only choose products that appear in the candidate list — do not invent product names."""
 
 

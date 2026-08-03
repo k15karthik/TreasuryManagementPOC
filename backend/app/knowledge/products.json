@@ -229,5 +229,26 @@
     ],
     "pain_points_solved": ["Multi-location Banking", "Liquidity Issues", "Manual Payments"],
     "keywords": ["information reporting", "treasury workstation", "cash visibility", "bai2", "reporting", "erp integration"]
+  },
+  {
+    "id": "commercial-card",
+    "name": "Commercial Card Program",
+    "category": "Payments",
+    "description": "A commercial (not consumer) card program spanning three complementary card types: Corporate/Employee Cards for travel, entertainment, and general business expense management; Purchasing Cards (P-Cards) for supplier payments and low-to-medium-dollar invoices as a direct replacement for paper checks and manual purchase orders; and Virtual Cards, which generate single-use or controlled card numbers for high-security supplier and B2B payments. Together these replace manual, check-based payables workflows with controlled, reportable electronic spending.",
+    "ideal_client": "Businesses that are heavily check-dependent for supplier payments, carry high accounts-payable processing costs, process a large volume of low- or medium-dollar invoices, run manual AP or procurement workflows, or want stronger employee spending controls with ERP-integrated reporting.",
+    "benefits": [
+      "Replaces paper checks with electronic commercial card payments, cutting AP processing costs and manual reconciliation",
+      "Improves cash flow through payment float and can earn commercial card rebates on program spend",
+      "Configurable employee and purchasing controls reduce fraud risk, especially with single-use Virtual Cards for supplier payments",
+      "Improves reporting, visibility, and ERP/accounting integration to automate procurement and AP",
+      "Extends Days Payable Outstanding (DPO) and improves working capital"
+    ],
+    "requirements": [
+      "Commercial card underwriting and credit approval",
+      "Defined employee/purchasing spend control policy (limits, merchant category restrictions, approval routing)",
+      "AP or ERP system capable of importing card transaction and reconciliation data for full automation value"
+    ],
+    "pain_points_solved": ["Manual Payments", "Too Many Checks", "High Fraud Risk", "Growth Plans"],
+    "keywords": ["commercial card", "corporate card", "purchasing card", "p-card", "virtual card", "procurement", "accounts payable", "ap automation", "supplier payments", "rebates", "days payable outstanding", "dpo", "b2b payments"]
   }
 ]
